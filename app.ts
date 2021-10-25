@@ -1,5 +1,6 @@
 import { ENVIRONMENT } from './base-types.ts';
-import { Application, oakCors } from './deps.ts';
+import { Application, Context, oakCors, Router, Status } from './deps.ts';
+import { authRouter } from './src/routers/auth.ts';
 
 const app = new Application();
 
@@ -24,9 +25,18 @@ if (Deno.env.get('APP_ENV') === ENVIRONMENT.PROD) {
 
 app.use(oakCors(corsConfig));
 
-app.use(c => {
-  c.response.body = 'TEST';
+const router = new Router();
+
+router.get('/api/v1/check', (c: Context) => {
+  c.response.status = Status.OK;
+  c.response.body = 'This is the API for kultigevideos.tk.';
 });
+
+app.use(router.routes());
+app.use(router.allowedMethods());
+
+app.use(authRouter.routes());
+app.use(authRouter.allowedMethods());
 
 app.addEventListener(
   'listen',
