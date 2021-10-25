@@ -1,0 +1,5 @@
+.vscode
+.git/
+scripts.json
+scripts.config.ts
+.env
