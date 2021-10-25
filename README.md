@@ -15,7 +15,7 @@ You should also disable any other Typescript checks like Volar for Vue.
 
 ### Starting the server
 
-1. Via denon: `denon start` (auto reload on file save)
+1. With denon: `denon start` (auto reload on file save)
 
 2. Through the standard deno command: `deno run --allow-net --allow-read --allow-env --unstable app.ts`
 
