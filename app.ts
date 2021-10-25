@@ -1,6 +1,7 @@
 import { ENVIRONMENT } from './base-types.ts';
 import { Application, Context, oakCors, Router, Status } from './deps.ts';
 import { authRouter } from './src/routers/auth.ts';
+import { userRouter } from './src/routers/user.ts';
 
 const app = new Application();
 
@@ -18,7 +19,7 @@ if (Deno.env.get('APP_ENV') === ENVIRONMENT.PROD) {
   };
 } else {
   corsConfig = {
-    origin: ['http://localhost:4000', 'http://localhost:5000'],
+    origin: ['http://localhost:3000', 'http://localhost:5000'],
     credentials: true,
   };
 }
@@ -37,6 +38,9 @@ app.use(router.allowedMethods());
 
 app.use(authRouter.routes());
 app.use(authRouter.allowedMethods());
+
+app.use(userRouter.routes());
+app.use(userRouter.allowedMethods());
 
 app.addEventListener(
   'listen',

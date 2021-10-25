@@ -1,7 +1,7 @@
 type UserRole = 'admin' | 'maintainer' | 'user';
 
 interface UserMetaData {
-  avatarUrl: string;
+  avatarUrl?: string;
 }
 
 export type User = {
@@ -10,5 +10,5 @@ export type User = {
   email: string;
   password?: string;
   role: UserRole;
-  meta: UserMetaData;
+  meta: UserMetaData | Record<string, never>;
 };
