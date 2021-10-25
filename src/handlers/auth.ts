@@ -1,8 +1,12 @@
 import { db } from '../db/index.ts';
 import { bcrypt, Context, Status } from '../../deps.ts';
-import { createJwt, initAuthSession, verifyJwt } from '../utils/auth.ts';
+import {
+  createJwt,
+  generateCookieOptions,
+  initAuthSession,
+  verifyJwt,
+} from '../utils/auth.ts';
 import { User } from '../db/models/user.d.ts';
-import { ENVIRONMENT } from '../../base-types.ts';
 
 const users = db.collection<User>('users');
 
@@ -68,23 +72,18 @@ export async function refreshToken(c: Context) {
     c.response.status = 200;
     c.response.body = { jwt, expires: 300, me: payload.me };
   } catch (_error) {
+    const cookieOptions = generateCookieOptions();
+    c.cookies.delete('__refresh-token__', cookieOptions);
+
     c.response.status = Status.Unauthorized;
     c.response.body = { mesage: 'Unauthorized' };
   }
 }
 
 export function logoutUser(c: Context) {
-  const cookieOptions = {} as {
-    domain: string;
-    sameSite: 'lax' | 'none' | 'strict';
-  };
-
-  if (Deno.env.get('APP_ENV') === ENVIRONMENT.PROD) {
-    cookieOptions.domain = '.marcbaque.tk';
-    cookieOptions.sameSite = 'strict';
-  }
-
+  const cookieOptions = generateCookieOptions();
   c.cookies.delete('__refresh-token__', cookieOptions);
+
   c.response.status = 200;
   c.response.body = { message: 'User logged out.' };
 }

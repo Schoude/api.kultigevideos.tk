@@ -1,5 +1,6 @@
 import { ENVIRONMENT } from '../../base-types.ts';
 import { create, getNumericDate, verify } from '../../deps.ts';
+import { COOKIE_DOMAIN } from './constants.ts';
 
 // Masterkey - if the server restarts all currently issued jwts will be invalid
 const key = await crypto.subtle.generateKey(
@@ -38,7 +39,7 @@ export async function initAuthSession<T>(jwtPayload: Record<string, T>) {
   };
 
   if (Deno.env.get('APP_ENV') === ENVIRONMENT.PROD) {
-    cookieConfigRefreshToken.domain = '.marcbaque.tk';
+    cookieConfigRefreshToken.domain = COOKIE_DOMAIN;
     cookieConfigRefreshToken.sameSite = 'strict';
   }
 
@@ -58,4 +59,18 @@ export async function initAuthSession<T>(jwtPayload: Record<string, T>) {
     jwt,
     cookieConfigRefreshToken,
   };
+}
+
+export function generateCookieOptions() {
+  const cookieOptions = {} as {
+    domain: string;
+    sameSite: 'lax' | 'none' | 'strict';
+  };
+
+  if (Deno.env.get('APP_ENV') === ENVIRONMENT.PROD) {
+    cookieOptions.domain = COOKIE_DOMAIN;
+    cookieOptions.sameSite = 'strict';
+  }
+
+  return cookieOptions;
 }
