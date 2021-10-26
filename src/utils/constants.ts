@@ -1,1 +1,1 @@
-export const COOKIE_DOMAIN = '.kultigevideos.tk';
+export const COOKIE_DOMAIN = ".kultigevideos.tk";
