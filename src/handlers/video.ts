@@ -32,7 +32,7 @@ export async function createVideo(c: Context) {
 
 export async function getVideoFeed(c: Context) {
   try {
-    const videoFeed = await videos.find({}, {
+    const videoFeed = await videos.find({ approved: true, listed: true }, {
       noCursorTimeout: false,
       limit: 20,
       projection: {
