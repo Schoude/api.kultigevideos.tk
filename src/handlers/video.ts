@@ -35,6 +35,12 @@ export async function getVideoFeed(c: Context) {
     const videoFeed = await videos.find({}, {
       noCursorTimeout: false,
       limit: 20,
+      projection: {
+        approvedBy: 0,
+        listed: 0,
+        approved: 0,
+        approvedAt: 0,
+      },
     })
       .toArray();
 

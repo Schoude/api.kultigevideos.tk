@@ -6,6 +6,7 @@ export interface Video {
   _id: string;
   hash: string;
   url: string;
+  title: string;
   thumb: string;
   viewCount: number;
   listed: boolean;
