@@ -1,5 +1,5 @@
 import { Video } from "./../db/models/video.d.ts";
-import { Bson, Context, Status } from "../../deps.ts";
+import { Context, Status } from "../../deps.ts";
 import { db } from "../db/index.ts";
 
 const videos = db.collection<Video>("videos");
@@ -27,5 +27,21 @@ export async function createVideo(c: Context) {
   } catch (error) {
     c.response.status = Status.InternalServerError;
     c.response.body = { message: "Error creating a video" };
+  }
+}
+
+export async function getVideoFeed(c: Context) {
+  try {
+    const videoFeed = await videos.find({}, {
+      noCursorTimeout: false,
+      limit: 20,
+    })
+      .toArray();
+
+    c.response.status = Status.OK;
+    c.response.body = videoFeed;
+  } catch (error) {
+    c.response.status = Status.InternalServerError;
+    c.response.body = { message: "Error getting the video feed." };
   }
 }
