@@ -7,6 +7,7 @@ export interface Video {
   hash: string;
   url: string;
   title: string;
+  description: string;
   thumb: string;
   viewCount: number;
   listed: boolean;
