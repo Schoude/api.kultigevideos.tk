@@ -1,5 +1,5 @@
 import { Video } from "./../db/models/video.d.ts";
-import { Context, Status } from "../../deps.ts";
+import { Context, RouterContext, Status } from "../../deps.ts";
 import { db } from "../db/index.ts";
 
 const videos = db.collection<Video>("videos");
@@ -49,5 +49,33 @@ export async function getVideoFeed(c: Context) {
   } catch (_) {
     c.response.status = Status.InternalServerError;
     c.response.body = { message: "Error getting the video feed." };
+  }
+}
+
+export async function getVideoByHash(c: RouterContext) {
+  const hash = c.params.hash;
+
+  try {
+    const video = await videos.findOne({ hash }, {
+      noCursorTimeout: false,
+      projection: {
+        approvedBy: 0,
+        approved: 0,
+        approvedAt: 0,
+      },
+    });
+
+    if (video == null) {
+      c.response.body = { message: "Video not found." };
+      c.response.status = Status.NotFound;
+    } else {
+      // TODO: save the user for view spam protection for 3 to 5 mins.
+      await videos.updateOne({ hash }, { $inc: { viewCount: 1 } });
+      c.response.body = video;
+      c.response.status = Status.OK;
+    }
+  } catch (_) {
+    c.response.body = { message: "Internal Server Error" };
+    c.response.status = Status.InternalServerError;
   }
 }
