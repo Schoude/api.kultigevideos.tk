@@ -24,7 +24,7 @@ export async function createVideo(c: Context) {
       c.response.status = Status.InternalServerError;
       c.response.body = { message: "Error creating a video" };
     }
-  } catch (error) {
+  } catch (_) {
     c.response.status = Status.InternalServerError;
     c.response.body = { message: "Error creating a video" };
   }
@@ -46,7 +46,7 @@ export async function getVideoFeed(c: Context) {
 
     c.response.status = Status.OK;
     c.response.body = videoFeed;
-  } catch (error) {
+  } catch (_) {
     c.response.status = Status.InternalServerError;
     c.response.body = { message: "Error getting the video feed." };
   }
