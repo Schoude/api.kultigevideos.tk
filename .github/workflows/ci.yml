@@ -1,0 +1,41 @@
+name: 'Build and deployment to Droplet'
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.3.4
+
+      - name: Push the files to server.
+        if: success()
+        uses: Pendect/action-rsyncer@v1.1.0
+        env:
+          DEPLOY_KEY: ${{secrets.DEPLOY_KEY}}
+        with:
+          flags: '-avzr --delete'
+          options: '--exclude .gitignore --exclude .git --exclude .github --exclude README.md --exclude scripts.config.example.ts'
+          ssh_options: ''
+          src: '/'
+          dest: ${{secrets.DEPLOY_DEST}}
+
+      - name: Start the Deno server with the new files.
+        uses: tarunjangra/ssh-remote-cmd@v1
+        with:
+          command: |
+            #!/usr/bin/env bash
+            echo "##[command]Create the .env file"
+            sudo tee ${{secrets.ENV_FILE_PATH}} > /dev/null <<EOF
+            APP_ENV=${{secrets.APP_ENV}}
+            MONGO_URI_PRODUCTION=${{secrets.MONGO_URI_PRODUCTION}}
+            EOF
+
+            echo "##[command]Start the new Deno server"
+            cd ${{secrets.DEPLOY_DEST}}
+            pm2 restart api.kultigevideos
+          host: ${{secrets.HOST}}
+          user: root
+          key: ${{secrets.DEPLOY_KEY}}
