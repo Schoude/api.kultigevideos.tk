@@ -1,6 +1,9 @@
+import { User } from "./../db/models/user.d.ts";
 import { Video } from "./../db/models/video.d.ts";
 import { Context, RouterContext, Status } from "../../deps.ts";
 import { db } from "../db/index.ts";
+import { viewcountLimiter } from "../utils/viewcount-limiter.ts";
+import { verifyJwt } from "../utils/auth.ts";
 
 const videos = db.collection<Video>("videos");
 
@@ -53,7 +56,9 @@ export async function getVideoFeed(c: Context) {
 }
 
 export async function getVideoByHash(c: RouterContext) {
-  const hash = c.params.hash;
+  const hash = c.params.hash as string;
+  const jwt = c.request.headers.get("Authentication")?.split(" ")[1] as string;
+  const payload = await verifyJwt(jwt) as { me: User };
 
   try {
     const video = await videos.findOne({ hash }, {
@@ -69,8 +74,11 @@ export async function getVideoByHash(c: RouterContext) {
       c.response.body = { message: "Video not found." };
       c.response.status = Status.NotFound;
     } else {
-      // TODO: save the user for view spam protection for 3 to 5 mins.
-      await videos.updateOne({ hash }, { $inc: { viewCount: 1 } });
+      if (viewcountLimiter.userIsLimited(hash, payload.me._id) === false) {
+        await videos.updateOne({ hash }, { $inc: { viewCount: 1 } });
+        viewcountLimiter.addViewerToLimit(hash, payload.me._id);
+      }
+
       c.response.body = video;
       c.response.status = Status.OK;
     }

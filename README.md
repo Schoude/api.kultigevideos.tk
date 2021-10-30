@@ -33,4 +33,5 @@ You should also disable any other Typescript checks like Volar for Vue.
 |       | POST   | `/api/v1/user`            | [ ]         | [ ]                     |
 | Video |        |                           |             |                         |
 |       | POST   | `/api/v1/video`           | [x]         | [x]                     |
-|       | POST   | `/api/v1/videos/feed`     | [x]         | [ ]                     |
+|       | GET    | `/api/v1/videos/feed`     | [x]         | [ ]                     |
+|       | GET    | `/api/v1/video/:hash`     | [x]         | [ ]                     |
