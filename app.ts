@@ -13,6 +13,7 @@ if (Deno.env.get("APP_ENV") === ENVIRONMENT.PROD) {
   corsConfig = {
     origin: [
       "https://kultigevideos.tk",
+      "https://www.kultigevideos.tk",
       "https://cms.kultigevideos.tk",
       "http://localhost:3000",
     ],
