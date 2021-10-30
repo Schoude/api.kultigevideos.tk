@@ -17,7 +17,7 @@ jobs:
           DEPLOY_KEY: ${{secrets.DEPLOY_KEY}}
         with:
           flags: '-avzr --delete'
-          options: '--exclude .gitignore --exclude .git --exclude .github --exclude README.md --exclude scripts.config.example.ts'
+          options: '--exclude .gitignore --exclude .git --exclude .github --exclude README.md --exclude scripts.config.example.ts --exclude .env.example'
           ssh_options: ''
           src: '/'
           dest: ${{secrets.DEPLOY_DEST}}
