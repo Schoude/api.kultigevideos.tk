@@ -71,14 +71,22 @@ export async function getVideoByHash(c: RouterContext) {
   const payload = await verifyJwt(jwt) as { me: User };
 
   try {
-    const video = await videos.findOne({ hash }, {
-      noCursorTimeout: false,
-      projection: {
-        approvedBy: 0,
-        approved: 0,
-        approvedAt: 0,
+    const video = await videos.aggregate([
+      {
+        $match: {
+          hash,
+        },
       },
-    });
+      ...lookUpUploaderStage,
+      {
+        "$project": {
+          "uploaderId": 0,
+          "approvedBy": 0,
+          "approvedById": 0,
+          "approvedAt": 0,
+        },
+      },
+    ]).next();
 
     if (video == null) {
       c.response.body = { message: "Video not found." };
