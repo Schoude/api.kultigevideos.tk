@@ -1,6 +1,7 @@
+import { lookUpUploaderStage } from "./../db/pipeline-helpers/video.ts";
 import { User } from "./../db/models/user.d.ts";
 import { Video } from "./../db/models/video.d.ts";
-import { Context, RouterContext, Status } from "../../deps.ts";
+import { Bson, Context, RouterContext, Status } from "../../deps.ts";
 import { db } from "../db/index.ts";
 import { viewcountLimiter } from "../utils/viewcount-limiter.ts";
 import { verifyJwt } from "../utils/auth.ts";
@@ -35,17 +36,26 @@ export async function createVideo(c: Context) {
 
 export async function getVideoFeed(c: Context) {
   try {
-    const videoFeed = await videos.find({ approved: true, listed: true }, {
-      noCursorTimeout: false,
-      limit: 20,
-      projection: {
-        approvedBy: 0,
-        listed: 0,
-        approved: 0,
-        approvedAt: 0,
+    const videoFeed = await videos.aggregate([
+      {
+        "$match": {
+          "listed": true,
+          "approved": true,
+        },
       },
-    })
-      .toArray();
+      {
+        "$limit": 20,
+      },
+      ...lookUpUploaderStage,
+      {
+        "$project": {
+          "uploaderId": 0,
+          "approvedBy": 0,
+          "approvedById": 0,
+          "approvedAt": 0,
+        },
+      },
+    ]).toArray();
 
     c.response.status = Status.OK;
     c.response.body = videoFeed;

@@ -12,12 +12,14 @@ export interface Video {
   viewCount: number;
   listed: boolean;
   approved: boolean;
+  approvedById?: string;
   approvedBy?: {
     _id: string;
     username: string;
     meta: UserMetaData;
   };
   approvedAt?: Date;
-  uploader: Uploader;
+  uploaderId: Uploader;
+  uploader?: Uploader;
   uploadedAt: Date;
 }
