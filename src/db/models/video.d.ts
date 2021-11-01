@@ -22,4 +22,6 @@ export interface Video {
   uploaderId: Uploader;
   uploader?: Uploader;
   uploadedAt: Date;
+  likes: string[];
+  dislikes: string[];
 }
