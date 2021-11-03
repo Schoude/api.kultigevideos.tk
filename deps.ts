@@ -1,4 +1,4 @@
-import "https://deno.land/x/dotenv@v3.0.0/load.ts";
+import "https://deno.land/x/dotenv@v3.1.0/load.ts";
 
 export {
   Application,
