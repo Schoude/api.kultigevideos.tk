@@ -8,7 +8,7 @@ const userRouter = new Router();
 userRouter
   .prefix(API_PREFIX)
   .post("/user", createUser)
-  .post("/password-change", checkJWT, passwordChange)
+  .put("/user/password", checkJWT, passwordChange)
   .put("/user", checkJWT, updateUser);
 
 export { userRouter };
