@@ -12,14 +12,15 @@ export async function createUser(c: Context) {
   }
 
   const req = c.request.body({ type: "json" });
-  const user = (await req.value) as User;
+  let user = (await req.value) as User;
   const hash = await bcrypt.hash(user.password as string);
   user.password = hash;
-
-  if (user.meta.avatarUrl == null) {
-    user.meta.avatarUrl =
-      "https://firebasestorage.googleapis.com/v0/b/kultige-videos.appspot.com/o/avatars%2Fdummy-avatar.jpg?alt=media&token=1b1250cb-5bd0-4841-9928-af17224b7465";
-  }
+  user = Object.assign(user, {
+    meta: {
+      avatarUrl:
+        "https://firebasestorage.googleapis.com/v0/b/kultige-videos.appspot.com/o/avatars%2Fdummy-avatar.jpg?alt=media&token=1b1250cb-5bd0-4841-9928-af17224b7465",
+    },
+  });
 
   try {
     const foundUser = await users.findOne(
@@ -29,7 +30,7 @@ export async function createUser(c: Context) {
 
     if (foundUser) {
       c.response.status = Status.Forbidden;
-      c.response.body = "User already exists.";
+      c.response.body = { message: "User already exists." };
       return;
     }
   } catch (_error) {
@@ -40,7 +41,7 @@ export async function createUser(c: Context) {
     const insertedId = await users.insertOne(user);
     if (insertedId) {
       c.response.status = Status.Created;
-      c.response.body = "User created.";
+      c.response.body = { message: "User created." };
     } else {
       c.response.status = Status.InternalServerError;
     }
