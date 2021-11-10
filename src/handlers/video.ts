@@ -44,7 +44,9 @@ export async function getVideoFeed(c: Context) {
         },
       },
       {
-        "$limit": 20,
+        "$sample": {
+          "size": 20,
+        },
       },
       ...lookUpUploaderStage,
       {
