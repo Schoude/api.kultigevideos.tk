@@ -130,11 +130,6 @@ export async function getVideosPanel(c: Context) {
         },
       },
       {
-        "$sample": {
-          "size": 20,
-        },
-      },
-      {
         "$sort": {
           "uploadedAt": 1,
         },
