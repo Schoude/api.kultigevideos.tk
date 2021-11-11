@@ -1,6 +1,9 @@
 import { User } from "./../db/models/user.d.ts";
-import { Middleware, Status } from "../../deps.ts";
+import { Bson, Middleware, Status } from "../../deps.ts";
 import { verifyJwt } from "../utils/auth.ts";
+import { db } from "../db/index.ts";
+
+const users = db.collection<User>("users");
 
 export const preventUserRole: Middleware = async (c, next) => {
   try {
@@ -9,7 +12,11 @@ export const preventUserRole: Middleware = async (c, next) => {
     if (jwt != null) {
       const payload = await verifyJwt(jwt) as { me: User };
 
-      if (payload.me.role == "user") {
+      const foundUser = await users.findOne({
+        _id: new Bson.ObjectId(payload.me._id),
+      }, { noCursorTimeout: false });
+
+      if (foundUser?.role == "user") {
         c.response.status = Status.Unauthorized;
         c.response.body = {
           message:
