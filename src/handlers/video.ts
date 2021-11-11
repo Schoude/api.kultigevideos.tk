@@ -1,4 +1,4 @@
-import { lookUpUploaderStage } from "./../db/pipeline-helpers/video.ts";
+import { createUserLookup } from "./../db/pipeline-helpers/video.ts";
 import { User } from "./../db/models/user.d.ts";
 import { Video } from "./../db/models/video.d.ts";
 import { Bson, Context, RouterContext, Status } from "../../deps.ts";
@@ -48,7 +48,7 @@ export async function getVideoFeed(c: Context) {
           "size": 20,
         },
       },
-      ...lookUpUploaderStage,
+      ...createUserLookup("uploader"),
       {
         "$project": {
           "uploaderId": 0,
@@ -79,7 +79,7 @@ export async function getVideoByHash(c: RouterContext) {
           hash,
         },
       },
-      ...lookUpUploaderStage,
+      ...createUserLookup("uploader"),
       {
         "$project": {
           "uploaderId": 0,

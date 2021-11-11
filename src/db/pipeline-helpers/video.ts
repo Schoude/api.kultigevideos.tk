@@ -1,34 +1,56 @@
-export const lookUpUploaderStage = [{
-  "$lookup": {
-    "from": "users",
-    "let": {
-      "video_uploader_id": { $toObjectId: "$uploaderId" },
-    },
-    "pipeline": [
-      {
-        "$match": {
-          $expr: {
-            $eq: ["$_id", "$$video_uploader_id"],
+/**
+ * Uses the $lookup step of a mongodb aggregation to find
+ * the uploader of approver in the users table.
+ */
+export function createUserLookup(userType: "uploader" | "approver") {
+  let userIdField = "";
+  let matchingIdField = "";
+  let aggregationField = "";
+
+  if (userType === "uploader") {
+    userIdField = "$uploaderId";
+    matchingIdField = "video_uploader_id";
+    aggregationField = "uploader";
+  } else if (userType === "approver") {
+    userIdField = "$approvedById";
+    matchingIdField = "video_approver_id";
+    aggregationField = "approvedBy";
+  }
+
+  const lookUpUploaderStage = [{
+    "$lookup": {
+      "from": "users",
+      "let": {
+        [matchingIdField]: { $toObjectId: `${userIdField}` },
+      },
+      "pipeline": [
+        {
+          "$match": {
+            $expr: {
+              $eq: ["$_id", `$$${matchingIdField}`],
+            },
           },
         },
-      },
-      {
-        "$project": {
-          "_id": 1,
-          "username": 1,
-          "meta": 1,
+        {
+          "$project": {
+            "_id": 1,
+            "username": 1,
+            "meta": 1,
+          },
         },
-      },
-    ],
-    "as": "uploader",
-  },
-}, {
-  "$addFields": {
-    "uploader": {
-      "$arrayElemAt": [
-        "$uploader",
-        0,
       ],
+      "as": `${aggregationField}`,
     },
-  },
-}];
+  }, {
+    "$addFields": {
+      [aggregationField]: {
+        "$arrayElemAt": [
+          `$${aggregationField}`,
+          0,
+        ],
+      },
+    },
+  }];
+
+  return lookUpUploaderStage;
+}
