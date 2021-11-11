@@ -140,12 +140,11 @@ export async function getVideosPanel(c: Context) {
         },
       },
       ...createUserLookup("uploader"),
+      ...createUserLookup("approver"),
       {
         "$project": {
           "uploaderId": 0,
-          "approvedBy": 0,
           "approvedById": 0,
-          "approvedAt": 0,
         },
       },
     ]).toArray();
