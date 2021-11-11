@@ -28,7 +28,7 @@ export async function verifyJwt(jwt: string) {
 
 export async function initAuthSession<T>(jwtPayload: Record<string, T>) {
   const date = new Date();
-  date.setMonth(date.getMonth() + 3);
+  date.setMonth(date.getMonth() + 1);
 
   const cookieConfigRefreshToken = {
     expires: date,
@@ -46,7 +46,7 @@ export async function initAuthSession<T>(jwtPayload: Record<string, T>) {
   const refreshToken = await create(
     { alg: "HS512", typ: "JWT" },
     {
-      exp: getNumericDate(date), // 3 months in the future
+      exp: getNumericDate(date), // 1 months in the future
       ...jwtPayload,
     },
     key,
