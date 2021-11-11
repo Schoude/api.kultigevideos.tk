@@ -67,6 +67,101 @@ export async function getVideoFeed(c: Context) {
   }
 }
 
+export async function getVideosPanel(c: Context) {
+  let videosNotApprovedNotListed;
+  let videosApprovedNotListed;
+  let videosApprovedAndListed;
+
+  try {
+    videosNotApprovedNotListed = await videos.aggregate([
+      {
+        "$match": {
+          "listed": false,
+          "approved": false,
+        },
+      },
+      ...createUserLookup("uploader"),
+      {
+        "$project": {
+          "uploaderId": 0,
+          "approvedBy": 0,
+          "approvedById": 0,
+          "approvedAt": 0,
+        },
+      },
+    ]).toArray();
+  } catch (_) {
+    c.response.status = Status.InternalServerError;
+    c.response.body = {
+      message: "Error getting the videos not approved, not listed.",
+    };
+  }
+
+  try {
+    videosApprovedNotListed = await videos.aggregate([
+      {
+        "$match": {
+          "listed": false,
+          "approved": true,
+        },
+      },
+      ...createUserLookup("uploader"),
+      ...createUserLookup("approver"),
+      {
+        "$project": {
+          "uploaderId": 0,
+          "approvedById": 0,
+        },
+      },
+    ]).toArray();
+  } catch (_) {
+    c.response.status = Status.InternalServerError;
+    c.response.body = {
+      message: "Error getting the videos approved, not listed.",
+    };
+  }
+
+  try {
+    videosApprovedAndListed = await videos.aggregate([
+      {
+        "$match": {
+          "listed": true,
+          "approved": true,
+        },
+      },
+      {
+        "$sample": {
+          "size": 20,
+        },
+      },
+      {
+        "$sort": {
+          "uploadedAt": 1,
+        },
+      },
+      ...createUserLookup("uploader"),
+      {
+        "$project": {
+          "uploaderId": 0,
+          "approvedBy": 0,
+          "approvedById": 0,
+          "approvedAt": 0,
+        },
+      },
+    ]).toArray();
+  } catch (_) {
+    c.response.status = Status.InternalServerError;
+    c.response.body = { message: "Error getting the listed videos." };
+  }
+
+  c.response.status = Status.OK;
+  c.response.body = {
+    videosNotApprovedNotListed,
+    videosApprovedNotListed,
+    videosApprovedAndListed,
+  };
+}
+
 export async function getVideoByHash(c: RouterContext) {
   const hash = c.params.hash as string;
   const jwt = c.request.headers.get("Authentication")?.split(" ")[1] as string;

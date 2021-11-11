@@ -7,6 +7,7 @@ import {
   dislikeVideo,
   getVideoByHash,
   getVideoFeed,
+  getVideosPanel,
   likeVideo,
 } from "../handlers/video.ts";
 
@@ -16,7 +17,9 @@ videoRouter.prefix(API_PREFIX).post(
   "/video",
   preventUserRole,
   createVideo,
-).get("/videos/feed", checkJWT, getVideoFeed)
+)
+  .get("/videos/feed", checkJWT, getVideoFeed)
+  .get("/videos/panel", preventUserRole, getVideosPanel)
   .get("/video/:hash", checkJWT, getVideoByHash)
   .put("/video/like", checkJWT, likeVideo)
   .put("/video/dislike", checkJWT, dislikeVideo);
