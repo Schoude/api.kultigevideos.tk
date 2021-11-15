@@ -1,5 +1,5 @@
 import { db } from "../db/index.ts";
-import { bcrypt, Context, Status } from "../../deps.ts";
+import { bcrypt, Bson, Context, Status } from "../../deps.ts";
 import {
   createJwt,
   generateCookieOptions,
@@ -66,11 +66,28 @@ export async function refreshToken(c: Context) {
   }
 
   try {
-    const payload = await verifyJwt(refreshToken);
-    const { jwt } = await createJwt(payload);
+    const payload = await verifyJwt(refreshToken) as { me: User };
 
-    c.response.status = 200;
-    c.response.body = { jwt, expires: 300, me: payload.me };
+    const foundUser = await users.findOne({
+      _id: new Bson.ObjectId(payload.me._id),
+    }, { noCursorTimeout: false });
+
+    if (foundUser?.role !== payload.me.role) {
+      const cookieOptions = generateCookieOptions();
+      c.cookies.delete("__refresh-token__", cookieOptions);
+
+      c.response.status = Status.Unauthorized;
+      c.response.body = {
+        message: "Unauthorized! Your account data has been modified.",
+      };
+
+      return;
+    } else {
+      const { jwt } = await createJwt(payload);
+
+      c.response.status = 200;
+      c.response.body = { jwt, expires: 300, me: payload.me };
+    }
   } catch (_error) {
     const cookieOptions = generateCookieOptions();
     c.cookies.delete("__refresh-token__", cookieOptions);
