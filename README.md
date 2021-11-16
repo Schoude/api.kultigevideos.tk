@@ -38,3 +38,4 @@ You should also disable any other Typescript checks like Volar for Vue.
 |       | GET    | `/api/v1/video/:hash`     | [x]         | [ ]                     |
 |       | PUT    | `/api/v1/video/like`      | [x]         | [ ]                     |
 |       | PUT    | `/api/v1/video/dislike`   | [x]         | [ ]                     |
+|       | PUT    | `/api/v1/video/approve`   | [x]         | [x]                     |

@@ -3,6 +3,7 @@ import { preventUserRole } from "./../middleware/userRoleMiddleware.ts";
 import { API_PREFIX } from "./../utils/constants.ts";
 import { Router } from "../../deps.ts";
 import {
+  approveVideo,
   createVideo,
   dislikeVideo,
   getVideoByHash,
@@ -22,6 +23,7 @@ videoRouter.prefix(API_PREFIX).post(
   .get("/videos/panel", preventUserRole, getVideosPanel)
   .get("/video/:hash", checkJWT, getVideoByHash)
   .put("/video/like", checkJWT, likeVideo)
-  .put("/video/dislike", checkJWT, dislikeVideo);
+  .put("/video/dislike", checkJWT, dislikeVideo)
+  .put("/video/approve", preventUserRole, approveVideo);
 
 export { videoRouter };

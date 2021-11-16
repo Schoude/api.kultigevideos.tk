@@ -45,7 +45,7 @@ export async function getVideoFeed(c: Context) {
       },
       {
         "$sample": {
-          "size": 20,
+          "size": 30,
         },
       },
       ...createUserLookup("uploader"),
@@ -308,6 +308,41 @@ export async function dislikeVideo(c: Context) {
         c.response.body = video;
         c.response.status = Status.Accepted;
       }
+    }
+  } catch (_) {
+    c.response.body = { message: "Internal Server Error" };
+    c.response.status = Status.InternalServerError;
+  }
+}
+
+export async function approveVideo(c: Context) {
+  if (!c.request.hasBody) {
+    c.response.status = Status.BadRequest;
+    return;
+  }
+
+  const req = c.request.body({ type: "json" });
+  const approveData = (await req.value) as {
+    videoId: string;
+    userId: string;
+    listVideo: boolean;
+  };
+
+  try {
+    const { modifiedCount } = await videos.updateOne({
+      _id: new Bson.ObjectId(approveData.videoId),
+    }, {
+      $set: {
+        approved: true,
+        listed: approveData.listVideo,
+        approvedById: approveData.userId,
+        approvedAt: new Date(),
+      },
+    });
+
+    if (modifiedCount > 0) {
+      c.response.body = { message: "Video approved." };
+      c.response.status = Status.OK;
     }
   } catch (_) {
     c.response.body = { message: "Internal Server Error" };
