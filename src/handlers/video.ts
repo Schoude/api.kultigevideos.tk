@@ -131,7 +131,7 @@ export async function getVideosPanel(c: Context) {
       },
       {
         "$sort": {
-          "uploadedAt": -1,
+          "approvedAt": -1,
         },
       },
       ...createUserLookup("uploader"),
