@@ -10,6 +10,7 @@ import {
   getVideoFeed,
   getVideosPanel,
   likeVideo,
+  toggleVideoListed,
 } from "../handlers/video.ts";
 
 const videoRouter = new Router();
@@ -24,6 +25,7 @@ videoRouter.prefix(API_PREFIX).post(
   .get("/video/:hash", checkJWT, getVideoByHash)
   .put("/video/like", checkJWT, likeVideo)
   .put("/video/dislike", checkJWT, dislikeVideo)
-  .put("/video/approve", preventUserRole, approveVideo);
+  .put("/video/approve", preventUserRole, approveVideo)
+  .put("/video/listed", preventUserRole, toggleVideoListed);
 
 export { videoRouter };

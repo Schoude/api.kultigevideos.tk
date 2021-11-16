@@ -131,7 +131,7 @@ export async function getVideosPanel(c: Context) {
       },
       {
         "$sort": {
-          "uploadedAt": 1,
+          "uploadedAt": -1,
         },
       },
       ...createUserLookup("uploader"),
@@ -343,6 +343,45 @@ export async function approveVideo(c: Context) {
     if (modifiedCount > 0) {
       c.response.body = { message: "Video approved." };
       c.response.status = Status.OK;
+    } else {
+      c.response.body = { message: "Internal Server Error" };
+      c.response.status = Status.InternalServerError;
+    }
+  } catch (_) {
+    c.response.body = { message: "Internal Server Error" };
+    c.response.status = Status.InternalServerError;
+  }
+}
+
+export async function toggleVideoListed(c: Context) {
+  if (!c.request.hasBody) {
+    c.response.status = Status.BadRequest;
+    return;
+  }
+
+  const req = c.request.body({ type: "json" });
+  const listedData = (await req.value) as {
+    videoId: string;
+    listVideo: boolean;
+  };
+
+  try {
+    const { modifiedCount } = await videos.updateOne({
+      _id: new Bson.ObjectId(listedData.videoId),
+    }, {
+      $set: {
+        listed: listedData.listVideo,
+      },
+    });
+
+    if (modifiedCount > 0) {
+      c.response.body = {
+        message: `Video listed state set to: ${listedData.listVideo}`,
+      };
+      c.response.status = Status.OK;
+    } else {
+      c.response.body = { message: "Internal Server Error" };
+      c.response.status = Status.InternalServerError;
     }
   } catch (_) {
     c.response.body = { message: "Internal Server Error" };
