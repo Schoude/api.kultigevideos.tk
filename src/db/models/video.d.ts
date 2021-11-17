@@ -28,5 +28,5 @@ export interface Video {
   uploadedAt: Date;
   likes: string[];
   dislikes: string[];
-  meta?: VideoMetaData;
+  meta: VideoMetaData;
 }
