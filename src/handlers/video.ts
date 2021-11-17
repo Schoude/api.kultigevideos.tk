@@ -45,7 +45,7 @@ export async function getVideoFeed(c: Context) {
       },
       {
         "$sample": {
-          "size": 30,
+          "size": 40,
         },
       },
       ...createUserLookup("uploader"),
