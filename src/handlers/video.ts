@@ -388,3 +388,24 @@ export async function toggleVideoListed(c: Context) {
     c.response.status = Status.InternalServerError;
   }
 }
+
+export async function deleteVideo(c: RouterContext) {
+  const params = c.params as { id: string };
+
+  try {
+    const deletedCount = await videos.deleteOne({
+      _id: new Bson.ObjectId(params.id),
+    });
+
+    if (deletedCount > 0) {
+      c.response.body = { message: `Video deleted with id: ${params.id}` };
+      c.response.status = Status.OK;
+    } else {
+      c.response.body = { message: "Internal Server Error" };
+      c.response.status = Status.InternalServerError;
+    }
+  } catch (error) {
+    c.response.body = { message: "Internal Server Error" };
+    c.response.status = Status.InternalServerError;
+  }
+}

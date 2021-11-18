@@ -5,6 +5,7 @@ import { Router } from "../../deps.ts";
 import {
   approveVideo,
   createVideo,
+  deleteVideo,
   dislikeVideo,
   getVideoByHash,
   getVideoFeed,
@@ -26,6 +27,7 @@ videoRouter.prefix(API_PREFIX).post(
   .put("/video/like", checkJWT, likeVideo)
   .put("/video/dislike", checkJWT, dislikeVideo)
   .put("/video/approve", preventUserRole, approveVideo)
-  .put("/video/listed", preventUserRole, toggleVideoListed);
+  .put("/video/listed", preventUserRole, toggleVideoListed)
+  .delete("/video/:id", checkJWT, deleteVideo);
 
 export { videoRouter };
