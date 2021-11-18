@@ -1,7 +1,8 @@
 import { db } from "../db/index.ts";
 import { User } from "../db/models/user.d.ts";
-import { bcrypt, Bson, Context, Status } from "../../deps.ts";
+import { bcrypt, Bson, Context, RouterContext, Status } from "../../deps.ts";
 import { initAuthSession } from "../utils/auth.ts";
+import { createUserProfileAggregation } from "../db/pipeline-helpers/user.ts";
 
 const users = db.collection<User>("users");
 
@@ -120,5 +121,21 @@ export async function updateUser(c: Context) {
   } catch (_error) {
     c.response.status = Status.InternalServerError;
     c.response.body = { message: "Internal Server Error" };
+  }
+}
+
+export async function getUserProfile(c: RouterContext) {
+  const params = c.params as { id: string };
+
+  try {
+    const profileData = await users.aggregate(
+      createUserProfileAggregation(params.id),
+    ).next();
+
+    c.response.body = profileData;
+    c.response.status = Status.OK;
+  } catch (_) {
+    c.response.body = { message: "Internal Server Error" };
+    c.response.status = Status.InternalServerError;
   }
 }
