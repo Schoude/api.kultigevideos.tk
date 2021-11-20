@@ -404,7 +404,7 @@ export async function deleteVideo(c: RouterContext) {
       c.response.body = { message: "Internal Server Error" };
       c.response.status = Status.InternalServerError;
     }
-  } catch (error) {
+  } catch (_) {
     c.response.body = { message: "Internal Server Error" };
     c.response.status = Status.InternalServerError;
   }

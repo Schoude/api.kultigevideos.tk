@@ -139,3 +139,21 @@ export async function getUserProfile(c: RouterContext) {
     c.response.status = Status.InternalServerError;
   }
 }
+
+export async function getUsersOverview(c: Context) {
+  try {
+    const usersOverview = await users.find(
+      { role: { $ne: "admin" } },
+      {
+        projection: { password: 0 },
+        noCursorTimeout: false,
+      },
+    ).toArray();
+
+    c.response.body = usersOverview;
+    c.response.status = Status.OK;
+  } catch (_) {
+    c.response.body = { message: "Internal Server Error" };
+    c.response.status = Status.InternalServerError;
+  }
+}
