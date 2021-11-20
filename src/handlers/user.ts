@@ -1,5 +1,5 @@
 import { db } from "../db/index.ts";
-import { User } from "../db/models/user.d.ts";
+import { User, UserRole } from "../db/models/user.d.ts";
 import { bcrypt, Bson, Context, RouterContext, Status } from "../../deps.ts";
 import { initAuthSession } from "../utils/auth.ts";
 import { createUserProfileAggregation } from "../db/pipeline-helpers/user.ts";
@@ -155,5 +155,33 @@ export async function getUsersOverview(c: Context) {
   } catch (_) {
     c.response.body = { message: "Internal Server Error" };
     c.response.status = Status.InternalServerError;
+  }
+}
+
+export async function updateUserRole(c: Context) {
+  if (!c.request.hasBody) {
+    c.response.status = Status.BadRequest;
+    return;
+  }
+
+  const req = c.request.body({ type: "json" });
+  const { role, userId } = (await req.value) as {
+    userId: string;
+    role: UserRole;
+  };
+
+  try {
+    const { modifiedCount } = await users.updateOne(
+      { _id: new Bson.ObjectId(userId) },
+      { $set: { role } },
+    );
+
+    if (modifiedCount > 0) {
+      c.response.status = Status.OK;
+      c.response.body = { message: "User role updated." };
+    }
+  } catch (_error) {
+    c.response.status = Status.InternalServerError;
+    c.response.body = { message: "Internal Server Error" };
   }
 }

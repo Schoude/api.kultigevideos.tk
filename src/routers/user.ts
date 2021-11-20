@@ -7,6 +7,7 @@ import {
   getUsersOverview,
   passwordChange,
   updateUser,
+  updateUserRole,
 } from "../handlers/user.ts";
 import { checkJWT } from "../middleware/jwtMiddleware.ts";
 
@@ -17,6 +18,7 @@ userRouter
   .post("/user", createUser)
   .put("/user/password", checkJWT, passwordChange)
   .put("/user", checkJWT, updateUser)
+  .put("/user/role", preventUserRole, updateUserRole)
   .get("/user/:id", checkJWT, getUserProfile)
   .get("/users/overview", preventUserRole, getUsersOverview);
 
