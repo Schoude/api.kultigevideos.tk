@@ -16,6 +16,5 @@ userRouter
   .put("/user/password", checkJWT, passwordChange)
   .put("/user", checkJWT, updateUser)
   .get("/user/:id", checkJWT, getUserProfile);
-// .get("/user/:id/self", checkJWT, getUserProfileSelf); // the user's OWN profile -> just get the users videos and the totals fields
 
 export { userRouter };
