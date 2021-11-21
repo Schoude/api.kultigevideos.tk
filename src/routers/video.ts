@@ -9,6 +9,7 @@ import {
   dislikeVideo,
   getVideoByHash,
   getVideoFeed,
+  getVideoRecommended,
   getVideosPanel,
   likeVideo,
   toggleVideoListed,
@@ -22,6 +23,7 @@ videoRouter.prefix(API_PREFIX).post(
   createVideo,
 )
   .get("/videos/feed", checkJWT, getVideoFeed)
+  .get("/videos/recommended/:excludeHash", checkJWT, getVideoRecommended)
   .get("/videos/panel", preventUserRole, getVideosPanel)
   .get("/video/:hash", checkJWT, getVideoByHash)
   .put("/video/like", checkJWT, likeVideo)

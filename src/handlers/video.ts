@@ -67,6 +67,43 @@ export async function getVideoFeed(c: Context) {
   }
 }
 
+export async function getVideoRecommended(c: RouterContext) {
+  const params = c.params as { excludeHash: string };
+
+  try {
+    const recommendedVideos = await videos.aggregate([
+      {
+        $match: {
+          hash: { $ne: `${params.excludeHash}` },
+          approved: true,
+          listed: true,
+        },
+      },
+      {
+        $sample: {
+          size: 15,
+        },
+      },
+      ...createUserLookup("uploader"),
+      {
+        "$project": {
+          "description": 0,
+          "uploaderId": 0,
+          "approvedBy": 0,
+          "approvedById": 0,
+          "approvedAt": 0,
+        },
+      },
+    ]).toArray();
+
+    c.response.status = Status.OK;
+    c.response.body = recommendedVideos;
+  } catch (_) {
+    c.response.status = Status.InternalServerError;
+    c.response.body = { message: "Error getting the recommended videos." };
+  }
+}
+
 export async function getVideosPanel(c: Context) {
   let videosNotApprovedNotListed;
   let videosApprovedNotListed;

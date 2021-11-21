@@ -21,26 +21,27 @@ You should also disable any other Typescript checks like Volar for Vue.
 
 ## Endpoints
 
-| TYPE  | METHOD | ENDPOINT                  | NEEDS AUTH? | NEEDS ADMIN/MAINTAINER? |
-| ----- | ------ | ------------------------- | ----------- | ----------------------- |
-| Auth  |        |                           |             |                         |
-|       | POST   | `/api/v1/user`            | [x]         | [ ]                     |
-|       | POST   | `/api/v1/login`           | [ ]         | [ ]                     |
-|       | POST   | `/api/v1/logout`          | [x]         | [ ]                     |
-|       | POST   | `/api/v1/refresh`         | [ ]         | [ ]                     |
-|       | POST   | `/api/v1/password-change` | [x]         | [ ]                     |
-| User  |        |                           |             |                         |
-|       | POST   | `/api/v1/user`            | [ ]         | [ ]                     |
-|       | PUT    | `/api/v1/user`            | [x]         | [ ]                     |
-|       | GET    | `/api/v1/user/:id`        | [x]         | [ ]                     |
-|       | GET    | `/api/v1/user/:id/self`   | [x]         | [ ]                     |
-|       | GET    | `/api/v1/users/overview`  | [x]         | [x]                     |
-| Video |        |                           |             |                         |
-|       | POST   | `/api/v1/video`           | [x]         | [x]                     |
-|       | GET    | `/api/v1/videos/feed`     | [x]         | [ ]                     |
-|       | GET    | `/api/v1/video/:hash`     | [x]         | [ ]                     |
-|       | PUT    | `/api/v1/video/like`      | [x]         | [ ]                     |
-|       | PUT    | `/api/v1/video/dislike`   | [x]         | [ ]                     |
-|       | PUT    | `/api/v1/video/approve`   | [x]         | [x]                     |
-|       | PUT    | `/api/v1/video/listed`    | [x]         | [x]                     |
-|       | DELETE | `/api/v1/video/:id        | [x]         | [ ]                     |
+| TYPE  | METHOD | ENDPOINT                     | NEEDS AUTH? | NEEDS ADMIN/MAINTAINER? |
+| ----- | ------ | ---------------------------- | ----------- | ----------------------- |
+| Auth  |        |                              |             |                         |
+|       | POST   | `/api/v1/user`               | [x]         | [ ]                     |
+|       | POST   | `/api/v1/login`              | [ ]         | [ ]                     |
+|       | POST   | `/api/v1/logout`             | [x]         | [ ]                     |
+|       | POST   | `/api/v1/refresh`            | [ ]         | [ ]                     |
+|       | POST   | `/api/v1/password-change`    | [x]         | [ ]                     |
+| User  |        |                              |             |                         |
+|       | POST   | `/api/v1/user`               | [ ]         | [ ]                     |
+|       | PUT    | `/api/v1/user`               | [x]         | [ ]                     |
+|       | GET    | `/api/v1/user/:id`           | [x]         | [ ]                     |
+|       | GET    | `/api/v1/user/:id/self`      | [x]         | [ ]                     |
+|       | GET    | `/api/v1/users/overview`     | [x]         | [x]                     |
+| Video |        |                              |             |                         |
+|       | POST   | `/api/v1/video`              | [x]         | [x]                     |
+|       | GET    | `/api/v1/videos/feed`        | [x]         | [ ]                     |
+|       | GET    | `/api/v1/videos/recommended` | [x]         | [ ]                     |
+|       | GET    | `/api/v1/video/:hash`        | [x]         | [ ]                     |
+|       | PUT    | `/api/v1/video/like`         | [x]         | [ ]                     |
+|       | PUT    | `/api/v1/video/dislike`      | [x]         | [ ]                     |
+|       | PUT    | `/api/v1/video/approve`      | [x]         | [x]                     |
+|       | PUT    | `/api/v1/video/listed`       | [x]         | [x]                     |
+|       | DELETE | `/api/v1/video/:id           | [x]         | [ ]                     |
