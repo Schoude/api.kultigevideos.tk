@@ -1,6 +1,7 @@
 import { ENVIRONMENT } from "./base-types.ts";
 import { Application, Context, oakCors, Router, Status } from "./deps.ts";
 import { authRouter } from "./src/routers/auth.ts";
+import { commentsRouter } from "./src/routers/comments.ts";
 import { userRouter } from "./src/routers/user.ts";
 import { videoRouter } from "./src/routers/video.ts";
 
@@ -46,6 +47,9 @@ app.use(userRouter.allowedMethods());
 
 app.use(videoRouter.routes());
 app.use(videoRouter.allowedMethods());
+
+app.use(commentsRouter.routes());
+app.use(commentsRouter.allowedMethods());
 
 app.addEventListener(
   "listen",
