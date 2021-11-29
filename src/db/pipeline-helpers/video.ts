@@ -2,7 +2,7 @@
  * Uses the $lookup step of a mongodb aggregation to find
  * the uploader of approver in the users table.
  */
-export function createUserLookup(userType: "uploader" | "approver") {
+export function createUserLookup(userType: "uploader" | "approver" | "author") {
   let userIdField = "";
   let matchingIdField = "";
   let aggregationField = "";
@@ -15,9 +15,13 @@ export function createUserLookup(userType: "uploader" | "approver") {
     userIdField = "$approvedById";
     matchingIdField = "video_approver_id";
     aggregationField = "approvedBy";
+  } else if (userType === "author") {
+    userIdField = "$authorId";
+    matchingIdField = "author_id";
+    aggregationField = "author";
   }
 
-  const lookUpUploaderStage = [{
+  const lookUpUserStage = [{
     "$lookup": {
       "from": "users",
       "let": {
@@ -52,5 +56,5 @@ export function createUserLookup(userType: "uploader" | "approver") {
     },
   }];
 
-  return lookUpUploaderStage;
+  return lookUpUserStage;
 }
