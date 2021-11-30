@@ -48,3 +48,4 @@ You should also disable any other Typescript checks like Volar for Vue.
 | Comments |        |                               |             |                         |
 |          | POST   | `/api/v1/comment`             | [x]         | [ ]                     |
 |          | GET    | `/api/v1/comments/:videoHash` | [x]         | [ ]                     |
+|          | PUT    | `/api/v1/comment/like`        | [x]         | [ ]                     |

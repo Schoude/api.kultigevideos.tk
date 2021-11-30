@@ -1,5 +1,5 @@
 import { Comment } from "./../db/models/comment.d.ts";
-import { Context, RouterContext, Status } from "../../deps.ts";
+import { Bson, Context, RouterContext, Status } from "../../deps.ts";
 import { db } from "../db/index.ts";
 import { createCommentsPipelineForVideohash } from "../db/pipeline-helpers/comment.ts";
 import { validateMaxLength, validateMinLength } from "../utils/validation.ts";
@@ -71,5 +71,59 @@ export async function getCommentsOfVideo(c: RouterContext) {
       message:
         `Error getting the comments for video with hash: ${params.videoHash}`,
     };
+  }
+}
+
+export async function likeComment(c: Context) {
+  if (!c.request.hasBody) {
+    c.response.status = Status.BadRequest;
+    return;
+  }
+
+  const req = c.request.body({ type: "json" });
+  const { commentId, userId } = (await req.value) as {
+    commentId: string;
+    userId: string;
+  };
+
+  try {
+    const comment = await comments.findOne({
+      _id: new Bson.ObjectId(commentId),
+    }, { noCursorTimeout: false });
+
+    if (comment?.likes.includes(userId)) {
+      const { modifiedCount } = await comments.updateOne({
+        _id: new Bson.ObjectId(commentId),
+      }, {
+        $pull: {
+          likes: userId,
+          dislikes: userId,
+        },
+      });
+
+      if (modifiedCount > 0) {
+        c.response.status = Status.Accepted;
+        c.response.body = {
+          message: `User ${userId} toggled like for comment ${commentId}`,
+        };
+      }
+    } else {
+      const { modifiedCount } = await comments.updateOne({
+        _id: new Bson.ObjectId(commentId),
+      }, {
+        $addToSet: { likes: userId },
+        $pull: { dislikes: userId },
+      });
+
+      if (modifiedCount > 0) {
+        c.response.status = Status.Accepted;
+        c.response.body = {
+          message: `User ${userId} toggled like for comment ${commentId}`,
+        };
+      }
+    }
+  } catch (error) {
+    c.response.status = Status.InternalServerError;
+    c.response.body = { message: "Internal server error." };
   }
 }
