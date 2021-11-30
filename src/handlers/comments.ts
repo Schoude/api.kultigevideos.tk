@@ -35,7 +35,14 @@ export async function getCommentsOfVideo(c: RouterContext) {
   try {
     const videoCommentsData = await comments.aggregate<CommetsOfVideoData>([{
       $facet: {
-        totalCount: [{ $count: "value" }],
+        totalCount: [
+          {
+            $match: { videoHash: params.videoHash },
+          },
+          {
+            $count: "value",
+          },
+        ],
         comments: [...createCommentsPipelineForVideohash(params.videoHash)],
       },
     }, {
