@@ -106,6 +106,9 @@ export async function likeComment(c: Context) {
         c.response.body = {
           message: `User ${userId} toggled like for comment ${commentId}`,
         };
+      } else {
+        c.response.status = Status.InternalServerError;
+        c.response.body = { message: "Internal server error." };
       }
     } else {
       const { modifiedCount } = await comments.updateOne({
@@ -120,6 +123,69 @@ export async function likeComment(c: Context) {
         c.response.body = {
           message: `User ${userId} toggled like for comment ${commentId}`,
         };
+      } else {
+        c.response.status = Status.InternalServerError;
+        c.response.body = { message: "Internal server error." };
+      }
+    }
+  } catch (error) {
+    c.response.status = Status.InternalServerError;
+    c.response.body = { message: "Internal server error." };
+  }
+}
+
+export async function dislikeComment(c: Context) {
+  if (!c.request.hasBody) {
+    c.response.status = Status.BadRequest;
+    return;
+  }
+
+  const req = c.request.body({ type: "json" });
+  const { commentId, userId } = (await req.value) as {
+    commentId: string;
+    userId: string;
+  };
+
+  try {
+    const comment = await comments.findOne({
+      _id: new Bson.ObjectId(commentId),
+    }, { noCursorTimeout: false });
+
+    if (comment?.dislikes.includes(userId)) {
+      const { modifiedCount } = await comments.updateOne({
+        _id: new Bson.ObjectId(commentId),
+      }, {
+        $pull: {
+          likes: userId,
+          dislikes: userId,
+        },
+      });
+
+      if (modifiedCount > 0) {
+        c.response.status = Status.Accepted;
+        c.response.body = {
+          message: `User ${userId} toggled dislike for comment ${commentId}`,
+        };
+      } else {
+        c.response.status = Status.InternalServerError;
+        c.response.body = { message: "Internal server error." };
+      }
+    } else {
+      const { modifiedCount } = await comments.updateOne({
+        _id: new Bson.ObjectId(commentId),
+      }, {
+        $addToSet: { dislikes: userId },
+        $pull: { likes: userId },
+      });
+
+      if (modifiedCount > 0) {
+        c.response.status = Status.Accepted;
+        c.response.body = {
+          message: `User ${userId} toggled dislike for comment ${commentId}`,
+        };
+      } else {
+        c.response.status = Status.InternalServerError;
+        c.response.body = { message: "Internal server error." };
       }
     }
   } catch (error) {
