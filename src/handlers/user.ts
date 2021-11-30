@@ -3,6 +3,7 @@ import { User, UserRole } from "../db/models/user.d.ts";
 import { bcrypt, Bson, Context, RouterContext, Status } from "../../deps.ts";
 import { initAuthSession } from "../utils/auth.ts";
 import { createUserProfileAggregation } from "../db/pipeline-helpers/user.ts";
+import { validateMinLength } from "../utils/validation.ts";
 
 const users = db.collection<User>("users");
 
@@ -62,6 +63,12 @@ export async function passwordChange(c: Context) {
     userId: string;
     newPassword: string;
   };
+
+  if (validateMinLength(newPassword, 5) === false) {
+    c.response.status = Status.UnprocessableEntity;
+    c.response.body = { message: "The given password was too short." };
+    return;
+  }
 
   const hashedNewPassword = await bcrypt.hash(newPassword);
 

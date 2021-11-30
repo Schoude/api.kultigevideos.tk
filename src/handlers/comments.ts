@@ -2,6 +2,7 @@ import { Comment } from "./../db/models/comment.d.ts";
 import { Context, RouterContext, Status } from "../../deps.ts";
 import { db } from "../db/index.ts";
 import { createCommentsPipelineForVideohash } from "../db/pipeline-helpers/comment.ts";
+import { validateMaxLength, validateMinLength } from "../utils/validation.ts";
 
 const comments = db.collection<Comment>("comments");
 
@@ -13,6 +14,19 @@ export async function createComment(c: Context) {
 
   const req = c.request.body({ type: "json" });
   const comment = (await req.value) as Comment;
+
+  if (validateMaxLength(comment.text, 500) === false) {
+    c.response.status = Status.UnprocessableEntity;
+    c.response.body = { message: "The given text was too long." };
+    return;
+  }
+
+  if (validateMinLength(comment.text, 3) === false) {
+    c.response.status = Status.UnprocessableEntity;
+    c.response.body = { message: "The given text was too short." };
+    return;
+  }
+
   comment.createdAt = new Date();
 
   try {
