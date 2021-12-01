@@ -15,6 +15,8 @@ export async function createComment(c: Context) {
   const req = c.request.body({ type: "json" });
   const comment = (await req.value) as Comment;
 
+  comment.text = comment.text.replace(/\n{3,}/g, "\n\n");
+
   if (validateMaxLength(comment.text, 500) === false) {
     c.response.status = Status.UnprocessableEntity;
     c.response.body = { message: "The given text was too long." };
@@ -51,7 +53,10 @@ export async function getCommentsOfVideo(c: RouterContext) {
       $facet: {
         totalCount: [
           {
-            $match: { videoHash: params.videoHash },
+            $match: {
+              videoHash: params.videoHash,
+              parentId: { $exists: false },
+            },
           },
           {
             $count: "value",

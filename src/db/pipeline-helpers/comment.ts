@@ -3,7 +3,7 @@ import { createUserLookup } from "./video.ts";
 export function createCommentsPipelineForVideohash(hash: string) {
   return [
     {
-      $match: { videoHash: hash },
+      $match: { videoHash: hash, parentId: { $exists: false } },
     },
     ...createUserLookup("author"),
     ...createUserLookup("uploader"),
