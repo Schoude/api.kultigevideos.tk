@@ -22,6 +22,11 @@ export function createCommentsPipelineForVideohash(hash: string) {
           ...createUserLookup("author"),
           ...createUserLookup("uploader"),
           {
+            "$sort": {
+              "createdAt": -1,
+            },
+          },
+          {
             "$project": {
               "authorId": 0,
               "uploaderId": 0,
