@@ -62,10 +62,27 @@ export async function getCommentsOfVideo(c: RouterContext) {
             $count: "value",
           },
         ],
+        replyCount: [
+          {
+            $match: {
+              videoHash: params.videoHash,
+              parentId: { $exists: true },
+            },
+          },
+          {
+            $count: "value",
+          },
+        ],
         comments: [...createCommentsPipelineForVideohash(params.videoHash)],
       },
     }, {
-      $unwind: { path: "$totalCount" },
+      $unwind: {
+        path: "$totalCount",
+      },
+    }, {
+      $unwind: {
+        path: "$replyCount",
+      },
     }]).next();
 
     c.response.status = Status.OK;

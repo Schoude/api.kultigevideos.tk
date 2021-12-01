@@ -13,4 +13,5 @@ export interface Comment {
   dislikes: string[];
   likedByUploader?: boolean;
   createdAt?: Date;
+  replies?: Comment[];
 }
