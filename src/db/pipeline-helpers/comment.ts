@@ -11,18 +11,23 @@ export function createCommentsPipelineForVideohash(hash: string) {
       "$lookup": {
         from: "comments",
         let: { comment_id: { $toString: "$_id" } },
-        pipeline: [{
-          "$match": {
-            "$expr": {
-              $eq: ["$parentId", "$$comment_id"],
+        pipeline: [
+          {
+            "$match": {
+              "$expr": {
+                $eq: ["$parentId", "$$comment_id"],
+              },
             },
           },
-        }, {
-          "$project": {
-            "authorId": 0,
-            "uploaderId": 0,
+          ...createUserLookup("author"),
+          ...createUserLookup("uploader"),
+          {
+            "$project": {
+              "authorId": 0,
+              "uploaderId": 0,
+            },
           },
-        }],
+        ],
         as: "replies",
       },
     },
