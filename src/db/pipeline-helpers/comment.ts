@@ -27,6 +27,13 @@ export function createCommentsPipelineForVideohash(hash: string) {
       },
     },
     {
+      "$addFields": {
+        replyCount: {
+          "$size": "$replies",
+        },
+      },
+    },
+    {
       "$sort": {
         "createdAt": -1,
       },
