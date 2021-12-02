@@ -15,9 +15,7 @@ export async function createComment(c: Context) {
   const req = c.request.body({ type: "json" });
   const comment = (await req.value) as Comment;
 
-  comment.text = comment.text.replace(/\n{3,}/g, "\n\n");
-
-  if (validateMaxLength(comment.text, 500) === false) {
+  if (validateMaxLength(comment.text, 1000) === false) {
     c.response.status = Status.UnprocessableEntity;
     c.response.body = { message: "The given text was too long." };
     return;
