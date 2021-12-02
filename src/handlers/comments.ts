@@ -1,5 +1,5 @@
 import { Comment } from "./../db/models/comment.d.ts";
-import { Bson, Context, RouterContext, Status } from "../../deps.ts";
+import { Bson, Context, helpers, RouterContext, Status } from "../../deps.ts";
 import { db } from "../db/index.ts";
 import { createCommentsPipelineForVideohash } from "../db/pipeline-helpers/comment.ts";
 import { validateMaxLength, validateMinLength } from "../utils/validation.ts";
@@ -197,4 +197,16 @@ export async function dislikeComment(c: Context) {
     c.response.status = Status.InternalServerError;
     c.response.body = { message: "Internal server error." };
   }
+}
+
+export async function deleteComment(c: Context) {
+  const { commentId, userId } = helpers.getQuery(c) as {
+    commentId: string;
+    userId: string;
+  };
+  console.log({ commentId, userId, handler: "deleteHandler" });
+  c.response.status = Status.OK;
+  c.response.body = {
+    message: `Comment with id ${commentId} sucessfully deleted.`,
+  };
 }

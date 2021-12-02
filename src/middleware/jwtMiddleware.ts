@@ -17,5 +17,6 @@ export const checkJWT: Middleware = async (c, next) => {
   } catch (_error) {
     c.response.status = Status.Unauthorized;
     c.response.body = { message: "Unauthorized" };
+    return;
   }
 };

@@ -61,5 +61,6 @@ export const checkLikeAbilityComment: Middleware = async (c, next) => {
   } catch (_) {
     c.response.status = Status.UnprocessableEntity;
     c.response.body = { message: "Unprocessable Entity" };
+    return;
   }
 };
