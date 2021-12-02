@@ -133,7 +133,7 @@ export async function likeComment(c: Context) {
         c.response.body = { message: "Internal server error." };
       }
     }
-  } catch (error) {
+  } catch (_) {
     c.response.status = Status.InternalServerError;
     c.response.body = { message: "Internal server error." };
   }
@@ -193,20 +193,41 @@ export async function dislikeComment(c: Context) {
         c.response.body = { message: "Internal server error." };
       }
     }
-  } catch (error) {
+  } catch (_) {
     c.response.status = Status.InternalServerError;
     c.response.body = { message: "Internal server error." };
   }
 }
 
 export async function deleteComment(c: Context) {
-  const { commentId, userId } = helpers.getQuery(c) as {
+  const { commentId } = helpers.getQuery(c) as {
     commentId: string;
     userId: string;
   };
-  console.log({ commentId, userId, handler: "deleteHandler" });
-  c.response.status = Status.OK;
-  c.response.body = {
-    message: `Comment with id ${commentId} sucessfully deleted.`,
-  };
+
+  try {
+    const deletedCount = await comments.deleteOne({
+      _id: new Bson.ObjectId(commentId),
+    });
+
+    const deletedCountReplies = await comments.deleteMany({
+      parentId: commentId,
+    });
+
+    if (deletedCount > 0 && deletedCountReplies === 0) {
+      c.response.status = Status.Accepted;
+      c.response.body = {
+        message: `Comment with id ${commentId} sucessfully deleted.`,
+      };
+    } else if (deletedCount > 0 && deletedCountReplies > 0) {
+      c.response.status = Status.Accepted;
+      c.response.body = {
+        message:
+          `Comment with id ${commentId} sucessfully deleted. Also ${deletedCountReplies} replies where deleted.`,
+      };
+    }
+  } catch (_) {
+    c.response.status = Status.InternalServerError;
+    c.response.body = { message: "Internal server error." };
+  }
 }
