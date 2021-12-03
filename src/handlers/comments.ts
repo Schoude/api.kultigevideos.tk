@@ -72,8 +72,13 @@ export async function getCommentsOfVideo(c: RouterContext) {
       },
     }]).next();
 
-    c.response.status = Status.OK;
-    c.response.body = videoCommentsData;
+    if (videoCommentsData) {
+      c.response.status = Status.OK;
+      c.response.body = videoCommentsData;
+    } else {
+      c.response.status = Status.Accepted;
+      c.response.body = { message: "Accepted" };
+    }
   } catch (_) {
     c.response.status = Status.InternalServerError;
     c.response.body = {
