@@ -62,13 +62,13 @@ export const checkDeleteAbilityComment: Middleware = async (c, next) => {
 
     // 5) check if the auth user is the comment author or an admin
     if (
-      foundComment.author?._id !== payload.me._id ||
-      foundComment.author._id !== userId
+      foundComment.authorId !== payload.me._id ||
+      foundComment.authorId !== userId
     ) {
       c.response.status = Status.UnprocessableEntity;
       c.response.body = {
         message:
-          "Unprocessable Entity. Delete User does is neither the comment's author or an admin.",
+          "Unprocessable Entity. Delete User does is not the comment's author.",
       };
       return;
     }
