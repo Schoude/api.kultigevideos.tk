@@ -32,7 +32,11 @@ export async function createComment(c: Context) {
   try {
     const insertedId = await comments.insertOne(comment);
     c.response.status = Status.Created;
-    c.response.body = { message: `Comment created with id ${insertedId}` };
+    c.response.body = {
+      message: `Comment created with id ${insertedId}`,
+      commentId: insertedId,
+      createdAt: comment.createdAt,
+    };
   } catch (_) {
     c.response.status = Status.InternalServerError;
     c.response.body = { message: "Error creating a comment." };
