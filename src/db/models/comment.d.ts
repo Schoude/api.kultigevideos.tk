@@ -14,5 +14,6 @@ export interface Comment {
   likedByUploader?: boolean;
   createdAt?: Date;
   replies?: Comment[];
-  replyCount?: number
+  replyCount?: number;
+  edited: boolean;
 }
