@@ -43,6 +43,57 @@ export async function createComment(c: Context) {
   }
 }
 
+export async function updateComment(c: Context) {
+  if (!c.request.hasBody) {
+    c.response.status = Status.BadRequest;
+    return;
+  }
+
+  const req = c.request.body({ type: "json" });
+  const { commentId, commentText } = (await req.value) as {
+    commentId: string;
+    commentText: string;
+  };
+
+  if (validateMaxLength(commentText, 1000) === false) {
+    c.response.status = Status.UnprocessableEntity;
+    c.response.body = { message: "The given text was too long." };
+    return;
+  }
+
+  if (validateMinLength(commentText, 3) === false) {
+    c.response.status = Status.UnprocessableEntity;
+    c.response.body = { message: "The given text was too short." };
+    return;
+  }
+
+  try {
+    const { modifiedCount } = await comments.updateOne({
+      _id: new Bson.ObjectId(commentId),
+    }, {
+      $set: {
+        text: commentText,
+        edited: true,
+      },
+    });
+
+    if (modifiedCount > 0) {
+      c.response.status = Status.OK;
+      c.response.body = {
+        message: `Comment with id ${commentId} updated.`,
+      };
+    } else {
+      c.response.status = Status.OK;
+      c.response.body = {
+        message: "Comment not updated. Text content was identical",
+      };
+    }
+  } catch (error) {
+    c.response.status = Status.InternalServerError;
+    c.response.body = { message: "Internal Server Error }" };
+  }
+}
+
 export async function getCommentsOfVideo(c: RouterContext) {
   interface CommetsOfVideoData {
     totalCount: { value: number };

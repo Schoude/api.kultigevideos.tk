@@ -47,6 +47,7 @@ You should also disable any other Typescript checks like Volar for Vue.
 |          | DELETE | `/api/v1/video/:id                  | [x]         | [ ]                     |
 | Comments |        |                                     |             |                         |
 |          | POST   | `/api/v1/comment`                   | [x]         | [ ]                     |
+|          | PUT    | `/api/v1/comment`                   | [x]         | [ ]                     |
 |          | GET    | `/api/v1/comments/:videoHash`       | [x]         | [ ]                     |
 |          | PUT    | `/api/v1/comment/like`              | [x]         | [ ]                     |
 |          | PUT    | `/api/v1/comment/dislike`           | [x]         | [ ]                     |
