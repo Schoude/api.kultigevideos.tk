@@ -52,3 +52,4 @@ You should also disable any other Typescript checks like Volar for Vue.
 |          | PUT    | `/api/v1/comment/like`              | [x]         | [ ]                     |
 |          | PUT    | `/api/v1/comment/dislike`           | [x]         | [ ]                     |
 |          | DELETE | `/api/v1/comment/?commentId&userId` | [x]         | [ ]                     |
+|          | POST   | `/api/v1/comment/heart`             | [x]         | [ ]                     |
