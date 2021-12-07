@@ -88,7 +88,7 @@ export async function updateComment(c: Context) {
         message: "Comment not updated. Text content was identical",
       };
     }
-  } catch (error) {
+  } catch (_) {
     c.response.status = Status.InternalServerError;
     c.response.body = { message: "Internal Server Error }" };
   }
