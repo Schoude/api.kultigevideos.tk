@@ -7,10 +7,12 @@ import {
   dislikeComment,
   getCommentsOfVideo,
   likeComment,
+  toggleCommentHeart,
   updateComment,
 } from "../handlers/comments.ts";
 import { checkLikeAbilityComment } from "../middleware/checkLikeAbilityComment.ts";
 import { checkDeleteAbilityComment } from "../middleware/checkDeleteAbilityComment.ts";
+import { checkGiveHeartAbilityComment } from "../middleware/checkGiveHeartAbilityComment.ts";
 
 const commentsRouter = new Router();
 
@@ -25,6 +27,12 @@ commentsRouter.prefix("/api/v1")
     checkJWT,
     checkDeleteAbilityComment,
     deleteComment,
+  )
+  .post(
+    "/comment/heart",
+    checkJWT,
+    checkGiveHeartAbilityComment,
+    toggleCommentHeart,
   );
 
 export { commentsRouter };

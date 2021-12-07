@@ -259,6 +259,40 @@ export async function dislikeComment(c: Context) {
   }
 }
 
+export async function toggleCommentHeart(c: Context) {
+  if (!c.request.hasBody) {
+    c.response.status = Status.BadRequest;
+    return;
+  }
+
+  const req = c.request.body({ type: "json" });
+  const { commentId, status } = (await req.value) as {
+    commentId: string;
+    status: boolean;
+  };
+
+  try {
+    const { modifiedCount } = await comments.updateOne({
+      _id: new Bson.ObjectId(commentId),
+    }, {
+      $set: { likedByUploader: status },
+    });
+
+    if (modifiedCount > 0) {
+      c.response.status = Status.OK;
+      c.response.body = { message: `Comment heart status set to ${status}.` };
+    } else {
+      c.response.status = Status.UnprocessableEntity;
+      c.response.body = {
+        message: "Error setting the comment's heart status.",
+      };
+    }
+  } catch (_) {
+    c.response.status = Status.InternalServerError;
+    c.response.body = { message: "Internal server error." };
+  }
+}
+
 export async function deleteComment(c: Context) {
   const { commentId } = helpers.getQuery(c) as {
     commentId: string;
