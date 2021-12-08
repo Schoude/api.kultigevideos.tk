@@ -21,7 +21,7 @@ export async function createComment(c: Context) {
     return;
   }
 
-  if (validateMinLength(comment.text, 3) === false) {
+  if (validateMinLength(comment.text, 1) === false) {
     c.response.status = Status.UnprocessableEntity;
     c.response.body = { message: "The given text was too short." };
     return;
