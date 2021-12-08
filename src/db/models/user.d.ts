@@ -13,4 +13,4 @@ export type User = {
   meta: UserMetaData | Record<string, never>;
 };
 
-export type UserSlim = Omit<User, "email" | "role">;
+export type UserSlim = Omit<User, "email" | "role" | "password">;
