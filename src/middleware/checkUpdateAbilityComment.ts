@@ -2,9 +2,9 @@ import { User } from "./../db/models/user.d.ts";
 import { Bson, Middleware, Status } from "../../deps.ts";
 import { verifyJwt } from "../utils/auth.ts";
 import { db } from "../db/index.ts";
-import { Comment } from "../db/models/comment.d.ts";
+import { IComment } from "../db/models/comment.d.ts";
 
-const comments = db.collection<Comment>("comments");
+const comments = db.collection<IComment>("comments");
 
 export const checkUpdateAbilityComment: Middleware = async (c, next) => {
   try {
@@ -28,7 +28,7 @@ export const checkUpdateAbilityComment: Middleware = async (c, next) => {
 
     if (foundComment == null) {
       c.response.status = Status.UnprocessableEntity;
-      c.response.body = { message: "Comment to like not found" };
+      c.response.body = { message: "IComment to like not found" };
       return;
     }
 

@@ -1,6 +1,6 @@
 import { UserSlim } from "./user.d.ts";
 
-export interface Comment {
+export interface IComment {
   _id?: string;
   authorId: string;
   author?: UserSlim;
@@ -13,7 +13,7 @@ export interface Comment {
   dislikes: string[];
   likedByUploader?: boolean;
   createdAt?: Date;
-  replies?: Comment[];
+  replies?: IComment[];
   replyCount?: number;
   edited: boolean;
 }

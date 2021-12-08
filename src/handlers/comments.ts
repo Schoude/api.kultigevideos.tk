@@ -1,10 +1,10 @@
-import { Comment } from "./../db/models/comment.d.ts";
+import { IComment } from "./../db/models/comment.d.ts";
 import { Bson, Context, helpers, RouterContext, Status } from "../../deps.ts";
 import { db } from "../db/index.ts";
 import { createCommentsPipelineForVideohash } from "../db/pipeline-helpers/comment.ts";
 import { validateMaxLength, validateMinLength } from "../utils/validation.ts";
 
-const comments = db.collection<Comment>("comments");
+const comments = db.collection<IComment>("comments");
 
 export async function createComment(c: Context) {
   if (!c.request.hasBody) {
@@ -13,7 +13,7 @@ export async function createComment(c: Context) {
   }
 
   const req = c.request.body({ type: "json" });
-  const comment = (await req.value) as Comment;
+  const comment = (await req.value) as IComment;
 
   if (validateMaxLength(comment.text, 1000) === false) {
     c.response.status = Status.UnprocessableEntity;
@@ -33,7 +33,7 @@ export async function createComment(c: Context) {
     const insertedId = await comments.insertOne(comment);
     c.response.status = Status.Created;
     c.response.body = {
-      message: `Comment created with id ${insertedId}`,
+      message: `IComment created with id ${insertedId}`,
       commentId: insertedId,
       createdAt: comment.createdAt,
     };
@@ -80,12 +80,12 @@ export async function updateComment(c: Context) {
     if (modifiedCount > 0) {
       c.response.status = Status.OK;
       c.response.body = {
-        message: `Comment with id ${commentId} updated.`,
+        message: `IComment with id ${commentId} updated.`,
       };
     } else {
       c.response.status = Status.OK;
       c.response.body = {
-        message: "Comment not updated. Text content was identical",
+        message: "IComment not updated. Text content was identical",
       };
     }
   } catch (_) {
@@ -97,7 +97,7 @@ export async function updateComment(c: Context) {
 export async function getCommentsOfVideo(c: RouterContext) {
   interface CommetsOfVideoData {
     totalCount: { value: number };
-    comments: Comment[];
+    comments: IComment[];
   }
 
   const params = c.params as { videoHash: string };
@@ -280,7 +280,7 @@ export async function toggleCommentHeart(c: Context) {
 
     if (modifiedCount > 0) {
       c.response.status = Status.OK;
-      c.response.body = { message: `Comment heart status set to ${status}.` };
+      c.response.body = { message: `IComment heart status set to ${status}.` };
     } else {
       c.response.status = Status.UnprocessableEntity;
       c.response.body = {
@@ -311,13 +311,13 @@ export async function deleteComment(c: Context) {
     if (deletedCount > 0 && deletedCountReplies === 0) {
       c.response.status = Status.Accepted;
       c.response.body = {
-        message: `Comment with id ${commentId} sucessfully deleted.`,
+        message: `IComment with id ${commentId} sucessfully deleted.`,
       };
     } else if (deletedCount > 0 && deletedCountReplies > 0) {
       c.response.status = Status.Accepted;
       c.response.body = {
         message:
-          `Comment with id ${commentId} sucessfully deleted. Also ${deletedCountReplies} replies where deleted.`,
+          `IComment with id ${commentId} sucessfully deleted. Also ${deletedCountReplies} replies where deleted.`,
       };
     }
   } catch (_) {
