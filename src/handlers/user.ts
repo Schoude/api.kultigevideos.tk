@@ -1,7 +1,7 @@
 import { db } from "../db/index.ts";
 import { User, UserRole } from "../db/models/user.d.ts";
 import { bcrypt, Bson, Context, RouterContext, Status } from "../../deps.ts";
-import { initAuthSession } from "../utils/auth.ts";
+import { initAuthSession, verifyJwt } from "../utils/auth.ts";
 import { createUserProfileAggregation } from "../db/pipeline-helpers/user.ts";
 import { validateMinLength } from "../utils/validation.ts";
 
@@ -134,9 +134,13 @@ export async function updateUser(c: Context) {
 export async function getUserProfile(c: RouterContext) {
   const params = c.params as { id: string };
 
+  const jwt = c.request.headers.get("Authentication")?.split(" ")[1];
+  const payload = await verifyJwt(jwt as string) as { me: User };
+  let skipUnlistedVideos = params.id !== payload.me._id;
+
   try {
     const profileData = await users.aggregate(
-      createUserProfileAggregation(params.id),
+      createUserProfileAggregation(params.id, skipUnlistedVideos),
     ).next();
 
     c.response.body = profileData;

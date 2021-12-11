@@ -1,6 +1,41 @@
 import { Bson } from "../../../deps.ts";
 
-export function createUserProfileAggregation(userId: string) {
+export function createUserProfileAggregation(
+  userId: string,
+  skipUnlistedVideos: boolean = false,
+) {
+  const videoMatcher = [
+    {
+      "$match": {
+        "$expr": {
+          "$eq": [
+            "$uploaderId",
+            "$$userId",
+          ],
+        },
+      },
+    },
+  ];
+
+  const videoMatcherNoUnlisted = [
+    {
+      "$match": {
+        $and: [{
+          "$expr": {
+            "$eq": [
+              "$uploaderId",
+              "$$userId",
+            ],
+          },
+        }, {
+          "$expr": {
+            "$eq": ["$listed", true],
+          },
+        }],
+      },
+    },
+  ];
+
   return [
     {
       "$match": {
@@ -15,18 +50,7 @@ export function createUserProfileAggregation(userId: string) {
             "$toString": "$_id",
           },
         },
-        "pipeline": [
-          {
-            "$match": {
-              "$expr": {
-                "$eq": [
-                  "$uploaderId",
-                  "$$userId",
-                ],
-              },
-            },
-          },
-        ],
+        "pipeline": skipUnlistedVideos ? videoMatcherNoUnlisted : videoMatcher,
         "as": "videos",
       },
     },
