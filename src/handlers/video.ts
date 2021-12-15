@@ -203,6 +203,8 @@ export async function getVideoByHash(c: RouterContext) {
       {
         $match: {
           hash,
+          listed: true,
+          approved: true,
         },
       },
       ...createUserLookup("uploader"),
