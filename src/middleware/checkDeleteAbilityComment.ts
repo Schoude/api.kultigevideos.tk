@@ -24,7 +24,7 @@ export const checkDeleteAbilityComment: Middleware = async (c, next) => {
 
     if (foundComment == null) {
       c.response.status = Status.UnprocessableEntity;
-      c.response.body = { message: "IComment to delete not found" };
+      c.response.body = { message: "Comment to delete not found" };
       return;
     }
 
@@ -68,7 +68,7 @@ export const checkDeleteAbilityComment: Middleware = async (c, next) => {
       c.response.status = Status.UnprocessableEntity;
       c.response.body = {
         message:
-          "Unprocessable Entity. Delete User does is not the comment's author.",
+          "Unprocessable Entity. Delete User is not the comment's author.",
       };
       return;
     }
