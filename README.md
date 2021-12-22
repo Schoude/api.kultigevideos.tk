@@ -38,6 +38,7 @@ You should also disable any other Typescript checks like Volar for Vue.
 | Video    |        |                                     |             |                         |
 |          | POST   | `/api/v1/video`                     | [x]         | [x]                     |
 |          | GET    | `/api/v1/videos/feed`               | [x]         | [ ]                     |
+|          | PUT    | `/api/v1/videos/feed`               | [x]         | [ ]                     |
 |          | GET    | `/api/v1/videos/recommended`        | [x]         | [ ]                     |
 |          | GET    | `/api/v1/video/:hash`               | [x]         | [ ]                     |
 |          | PUT    | `/api/v1/video/like`                | [x]         | [ ]                     |

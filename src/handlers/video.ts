@@ -67,6 +67,52 @@ export async function getVideoFeed(c: Context) {
   }
 }
 
+export async function reloadVideoFeed(c: RouterContext) {
+  if (!c.request.hasBody) {
+    c.response.status = Status.BadRequest;
+    return;
+  }
+
+  const req = c.request.body({ type: "json" });
+  const { excludeHashesString } = (await req.value) as {
+    excludeHashesString: string;
+  };
+
+  try {
+    const videoFeed = await videos.aggregate([
+      {
+        "$match": {
+          "hash": {
+            "$nin": JSON.parse(excludeHashesString),
+          },
+          "listed": true,
+          "approved": true,
+        },
+      },
+      {
+        "$sample": {
+          "size": 20,
+        },
+      },
+      ...createUserLookup("uploader"),
+      {
+        "$project": {
+          "uploaderId": 0,
+          "approvedBy": 0,
+          "approvedById": 0,
+          "approvedAt": 0,
+        },
+      },
+    ]).toArray();
+
+    c.response.status = Status.OK;
+    c.response.body = videoFeed;
+  } catch (_) {
+    c.response.status = Status.InternalServerError;
+    c.response.body = { message: "Error getting the video feed." };
+  }
+}
+
 export async function getVideoRecommended(c: RouterContext) {
   const params = c.params as { excludeHash: string };
 

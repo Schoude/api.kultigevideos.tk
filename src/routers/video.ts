@@ -13,6 +13,7 @@ import {
   getVideoRecommended,
   getVideosPanel,
   likeVideo,
+  reloadVideoFeed,
   toggleVideoListed,
 } from "../handlers/video.ts";
 
@@ -24,6 +25,7 @@ videoRouter.prefix(API_PREFIX).post(
   createVideo,
 )
   .get("/videos/feed", checkJWT, getVideoFeed)
+  .put("/videos/feed", checkJWT, reloadVideoFeed)
   .get("/videos/recommended/:excludeHash", checkJWT, getVideoRecommended)
   .get("/videos/panel", preventUserRole, getVideosPanel)
   .get("/video/:hash", checkJWT, getVideoByHash)
